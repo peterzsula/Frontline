@@ -176,8 +176,12 @@ namespace Frontline.GameManagement
                 }
             }
             
-            Debug.Log($"Team A average skill: {teamASkill / teamA.Count:F1}");
-            Debug.Log($"Team B average skill: {teamBSkill / teamB.Count:F1}");
+            // Avoid division by zero
+            float teamAAverage = teamA.Count > 0 ? teamASkill / teamA.Count : 0f;
+            float teamBAverage = teamB.Count > 0 ? teamBSkill / teamB.Count : 0f;
+            
+            Debug.Log($"Team A average skill: {teamAAverage:F1}");
+            Debug.Log($"Team B average skill: {teamBAverage:F1}");
         }
         
         public void UpdatePlayerStats(PlayerData player, bool won, float damageDealt)
