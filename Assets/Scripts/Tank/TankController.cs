@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Frontline.Tank
 {
@@ -22,8 +23,7 @@ namespace Frontline.Tank
         private TankHealth tankHealth;
         
         // Input values
-        private float moveInput;
-        private float rotateInput;
+        private Vector2 moveInput;
         private bool fireInput;
         
         private void Awake()
@@ -35,12 +35,13 @@ namespace Frontline.Tank
         
         private void Update()
         {
-            // Handle input - this would be replaced with proper input system in full game
+            // Handle input - using new Input System
             HandleInput();
             
             if (fireInput && tankShooting != null)
             {
                 tankShooting.Fire();
+                fireInput = false; // Reset fire input
             }
         }
         
@@ -52,14 +53,40 @@ namespace Frontline.Tank
         
         private void HandleInput()
         {
-            moveInput = Input.GetAxis("Vertical");
-            rotateInput = Input.GetAxis("Horizontal");
-            fireInput = Input.GetButtonDown("Fire1");
+            // Get movement input from WASD or arrow keys
+            var keyboard = Keyboard.current;
+            if (keyboard != null)
+            {
+                Vector2 input = Vector2.zero;
+                
+                if (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed)
+                    input.y = 1f;
+                else if (keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed)
+                    input.y = -1f;
+                    
+                if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed)
+                    input.x = 1f;
+                else if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed)
+                    input.x = -1f;
+                    
+                moveInput = input;
+                
+                // Fire input
+                if (keyboard.spaceKey.wasPressedThisFrame)
+                    fireInput = true;
+            }
+            
+            // Also check for mouse input for firing
+            var mouse = Mouse.current;
+            if (mouse != null && mouse.leftButton.wasPressedThisFrame)
+            {
+                fireInput = true;
+            }
         }
         
         private void Move()
         {
-            Vector3 movement = transform.forward * moveInput * moveSpeed * Time.fixedDeltaTime;
+            Vector3 movement = transform.forward * moveInput.y * moveSpeed * Time.fixedDeltaTime;
             
             // Apply movement while respecting max speed
             if (rb.velocity.magnitude < maxSpeed)
@@ -70,7 +97,7 @@ namespace Frontline.Tank
         
         private void Rotate()
         {
-            float rotation = rotateInput * rotationSpeed * Time.fixedDeltaTime;
+            float rotation = moveInput.x * rotationSpeed * Time.fixedDeltaTime;
             rb.AddTorque(0, rotation, 0, ForceMode.VelocityChange);
         }
         

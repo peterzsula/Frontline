@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Frontline.GameManagement
 {
@@ -28,7 +29,7 @@ namespace Frontline.GameManagement
             // Find player tank if not assigned
             if (target == null)
             {
-                GameObject playerTank = GameObject.FindGameObjectWithTag("Player");
+                GameObject playerTank = GameObject.FindWithTag("Player");
                 if (playerTank != null)
                 {
                     target = playerTank.transform;
@@ -50,7 +51,8 @@ namespace Frontline.GameManagement
             }
             
             // Toggle cursor lock with Escape
-            if (Input.GetKeyDown(KeyCode.Escape))
+            var keyboard = Keyboard.current;
+            if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
             {
                 if (Cursor.lockState == CursorLockMode.Locked)
                 {
@@ -72,9 +74,14 @@ namespace Frontline.GameManagement
         
         private void HandleMouseLook()
         {
-            mouseX += Input.GetAxis("Mouse X") * mouseSensitivity;
-            mouseY -= Input.GetAxis("Mouse Y") * mouseSensitivity;
-            mouseY = Mathf.Clamp(mouseY, minVerticalAngle, maxVerticalAngle);
+            var mouse = Mouse.current;
+            if (mouse != null)
+            {
+                Vector2 mouseDelta = mouse.delta.ReadValue();
+                mouseX += mouseDelta.x * mouseSensitivity * Time.deltaTime;
+                mouseY -= mouseDelta.y * mouseSensitivity * Time.deltaTime;
+                mouseY = Mathf.Clamp(mouseY, minVerticalAngle, maxVerticalAngle);
+            }
         }
         
         private void FollowTarget()

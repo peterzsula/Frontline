@@ -35,7 +35,7 @@ namespace Frontline.UI
         private void Start()
         {
             // Find player tank components
-            GameObject playerTank = GameObject.FindGameObjectWithTag("Player");
+            GameObject playerTank = GameObject.FindWithTag("Player");
             if (playerTank != null)
             {
                 playerHealth = playerTank.GetComponent<Tank.TankHealth>();
@@ -50,7 +50,7 @@ namespace Frontline.UI
             }
             
             // Find game manager
-            gameManager = FindObjectOfType<GameManagement.GameManager>();
+            gameManager = Object.FindAnyObjectByType<GameManagement.GameManager>();
             
             // Initialize UI
             if (gameOverPanel != null)
