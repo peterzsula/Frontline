@@ -84,34 +84,65 @@ namespace Frontline.GameManagement
         
         private void SpawnPlayerTank()
         {
-            if (teamASpawnPoints.Length > 0 && playerTankPrefab != null)
+            if (teamASpawnPoints == null || teamASpawnPoints.Length == 0)
             {
-                Transform spawnPoint = teamASpawnPoints[0];
-                GameObject playerTank = Instantiate(playerTankPrefab, spawnPoint.position, spawnPoint.rotation);
-                teamATanks.Add(playerTank);
-                
-                // Tag as player
-                playerTank.tag = "Player";
+                Debug.LogError("GameManager: No Team A spawn points assigned! Cannot spawn player tank.");
+                return;
             }
+            
+            if (playerTankPrefab == null)
+            {
+                Debug.LogError("GameManager: Player tank prefab not assigned! Cannot spawn player tank.");
+                return;
+            }
+            
+            Transform spawnPoint = teamASpawnPoints[0];
+            if (spawnPoint == null)
+            {
+                Debug.LogError("GameManager: Team A spawn point 0 is null! Cannot spawn player tank.");
+                return;
+            }
+            
+            GameObject playerTank = Instantiate(playerTankPrefab, spawnPoint.position, spawnPoint.rotation);
+            teamATanks.Add(playerTank);
+            
+            // Tag as player
+            playerTank.tag = "Player";
         }
         
         private void SpawnAITanks()
         {
-            // Spawn AI tanks for team B
-            for (int i = 0; i < Mathf.Min(3, teamBSpawnPoints.Length); i++) // Spawn 3 AI tanks for prototype
+            if (teamBSpawnPoints == null || teamBSpawnPoints.Length == 0)
             {
-                if (aiTankPrefab != null)
+                Debug.LogError("GameManager: No Team B spawn points assigned! Cannot spawn AI tanks.");
+                return;
+            }
+            
+            if (aiTankPrefab == null)
+            {
+                Debug.LogError("GameManager: AI tank prefab not assigned! Cannot spawn AI tanks.");
+                return;
+            }
+            
+            // Spawn AI tanks for team B
+            int tanksToSpawn = Mathf.Min(3, teamBSpawnPoints.Length);
+            for (int i = 0; i < tanksToSpawn; i++)
+            {
+                Transform spawnPoint = teamBSpawnPoints[i];
+                if (spawnPoint == null)
                 {
-                    Transform spawnPoint = teamBSpawnPoints[i];
-                    GameObject aiTank = Instantiate(aiTankPrefab, spawnPoint.position, spawnPoint.rotation);
-                    teamBTanks.Add(aiTank);
-                    
-                    // Add AI controller
-                    var aiController = aiTank.GetComponent<AITankController>();
-                    if (aiController == null)
-                    {
-                        aiController = aiTank.AddComponent<AITankController>();
-                    }
+                    Debug.LogWarning($"GameManager: Team B spawn point {i} is null! Skipping this spawn.");
+                    continue;
+                }
+                
+                GameObject aiTank = Instantiate(aiTankPrefab, spawnPoint.position, spawnPoint.rotation);
+                teamBTanks.Add(aiTank);
+                
+                // Add AI controller
+                var aiController = aiTank.GetComponent<AITankController>();
+                if (aiController == null)
+                {
+                    aiController = aiTank.AddComponent<AITankController>();
                 }
             }
         }

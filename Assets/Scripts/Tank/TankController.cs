@@ -89,7 +89,7 @@ namespace Frontline.Tank
             Vector3 movement = transform.forward * moveInput.y * moveSpeed * Time.fixedDeltaTime;
             
             // Apply movement while respecting max speed
-            if (rb.linearVelocity.magnitude < maxSpeed)
+            if (rb.velocity.magnitude < maxSpeed)
             {
                 rb.AddForce(movement, ForceMode.VelocityChange);
             }

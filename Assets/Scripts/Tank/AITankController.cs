@@ -11,7 +11,7 @@ namespace Frontline.Tank
         [SerializeField] private float detectionRange = 20f;
         [SerializeField] private float attackRange = 15f;
         [SerializeField] private float wanderRadius = 10f;
-        [SerializeField] private LayerMask enemyLayers = -1;
+        [SerializeField] private LayerMask enemyLayers = 1; // Default layer only
         
         private TankController tankController;
         private TankShooting tankShooting;
@@ -162,7 +162,11 @@ namespace Frontline.Tank
         
         private void MoveInDirection(Vector3 direction)
         {
-            if (tankController == null) return;
+            if (tankController == null)
+            {
+                Debug.LogWarning("AITankController: TankController component missing! AI cannot move properly.");
+                return;
+            }
             
             // Calculate movement input
             float moveInput = Vector3.Dot(transform.forward, direction);
@@ -186,6 +190,10 @@ namespace Frontline.Tank
                     float rotation = rotateInput * 60f * Time.deltaTime;
                     rb.AddTorque(0, rotation, 0, ForceMode.VelocityChange);
                 }
+            }
+            else
+            {
+                Debug.LogWarning("AITankController: Rigidbody component missing! AI cannot move.");
             }
         }
         

@@ -47,10 +47,27 @@ namespace Frontline.UI
                     playerHealth.OnHealthChanged.AddListener(UpdateHealthUI);
                     playerHealth.OnTankDestroyed.AddListener(OnPlayerDestroyed);
                 }
+                else
+                {
+                    Debug.LogWarning("GameUI: Player tank found but TankHealth component is missing!");
+                }
+                
+                if (playerShooting == null)
+                {
+                    Debug.LogWarning("GameUI: Player tank found but TankShooting component is missing!");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("GameUI: No player tank found with 'Player' tag! UI will not function properly until player spawns.");
             }
             
             // Find game manager
             gameManager = Object.FindAnyObjectByType<GameManagement.GameManager>();
+            if (gameManager == null)
+            {
+                Debug.LogError("GameUI: No GameManager found in scene! Game info UI will not work.");
+            }
             
             // Initialize UI
             if (gameOverPanel != null)

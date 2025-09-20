@@ -33,6 +33,11 @@ namespace Frontline.GameManagement
                 if (playerTank != null)
                 {
                     target = playerTank.transform;
+                    Debug.Log("CameraController: Found and assigned player tank as target.");
+                }
+                else
+                {
+                    Debug.LogWarning("CameraController: No player tank found with 'Player' tag! Camera will not follow until target is assigned.");
                 }
             }
             

@@ -38,9 +38,15 @@ namespace Frontline.Tank
         {
             if (Time.time < nextFireTime || currentAmmo <= 0 || isReloading)
                 return false;
-                
+            
+            if (firePoint == null)
+            {
+                Debug.LogWarning("TankShooting: Fire point not assigned! Cannot fire.");
+                return false;
+            }
+            
             // Create projectile
-            if (projectilePrefab != null && firePoint != null)
+            if (projectilePrefab != null)
             {
                 GameObject projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
                 Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
@@ -49,6 +55,14 @@ namespace Frontline.Tank
                 {
                     projectileRb.AddForce(firePoint.forward * fireForce);
                 }
+                else
+                {
+                    Debug.LogWarning("TankShooting: Projectile prefab missing Rigidbody component!");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("TankShooting: Projectile prefab not assigned!");
             }
             
             // Update ammo and fire rate
@@ -74,8 +88,11 @@ namespace Frontline.Tank
         {
             if (isReloading || currentAmmo >= maxAmmo)
                 return;
-                
-            StartCoroutine(ReloadCoroutine());
+            
+            if (this != null && gameObject != null)
+            {
+                StartCoroutine(ReloadCoroutine());
+            }
         }
         
         private System.Collections.IEnumerator ReloadCoroutine()
